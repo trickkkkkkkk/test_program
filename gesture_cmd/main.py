@@ -370,24 +370,6 @@ class MainWindow(QMainWindow):
         self.detect_status.setStyleSheet("background-color: #f9e2af; color: #000000;")
         self.detect_status.setFixedSize(120, 25)  # Fixed size to prevent layout changes
         
-        # hand status
-        hand_status_label = QLabel('🖐️ Hand Status:')
-        hand_status_label.setStyleSheet("color: #a6adc8;")
-        
-        self.hand_status = QLabel("Not Detected")
-        self.hand_status.setObjectName("status_value")
-        self.hand_status.setStyleSheet("background-color: #f9e2af; color: #000000;")
-        self.hand_status.setFixedSize(120, 25)  # Fixed size to prevent layout changes
-        
-        # Gesture status
-        gesture_status_label = QLabel('🤟 Gesture Status:')
-        gesture_status_label.setStyleSheet("color: #a6adc8;")
-        
-        self.gesture_status = QLabel("Not Detected")
-        self.gesture_status.setObjectName("status_value")
-        self.gesture_status.setStyleSheet("background-color: #f9e2af; color: #000000;")
-        self.gesture_status.setFixedSize(120, 25)  # Fixed size to prevent layout changes
-        
         # Video playback status
         video_status_label = QLabel("▶️ Video Status:")
         video_status_label.setStyleSheet("color: #a6adc8;")
@@ -404,7 +386,7 @@ class MainWindow(QMainWindow):
         self.file_name_label = QLabel("Filename: Not Selected")
         self.file_name_label.setStyleSheet("color: #cdd6f4; font-size: 15px;")
         
-        self.file_size_label = QLabel("Resolution: Not Loaded")
+        self.file_size_label = QLabel("Size: Not Loaded")
         self.file_size_label.setStyleSheet("color: #cdd6f4; font-size: 15px;")
         
         self.file_duration_label = QLabel("Duration: Not Loaded")
@@ -427,13 +409,8 @@ class MainWindow(QMainWindow):
         
         status_layout.addWidget(detect_status_label, 1, 0)
         status_layout.addWidget(self.detect_status, 1, 1)
-        status_layout.addWidget(hand_status_label, 1, 2)
-        status_layout.addWidget(self.hand_status, 1, 3)
-        
-        status_layout.addWidget(gesture_status_label, 2, 0)
-        status_layout.addWidget(self.gesture_status, 2, 1)
-        status_layout.addWidget(video_status_label, 2, 2)
-        status_layout.addWidget(self.video_status, 2, 3)
+        status_layout.addWidget(video_status_label, 1, 2)
+        status_layout.addWidget(self.video_status, 1, 3)
         
         status_group.setLayout(status_layout)
         right_layout.addWidget(status_group)
@@ -444,15 +421,18 @@ class MainWindow(QMainWindow):
         instruction_layout = QVBoxLayout()
         
         instructions = QLabel(
-            "<b>Automatic Control Commands:</b><br>"
-            "• While playing video, Hand gazing at screen → Continue playback<br>"
-            "• Hand closed or looking away from screen → Pause playback<br>"
-            "• Face not detected → Pause playback<br><br>"
+            "<b>Gesture Control Commands:</b><br>"
+            "• Open palm (5 fingers) → Play / Pause<br>"
+            "• Swipe right → Fast forward 5 seconds<br>"
+            "• Swipe left → Rewind 5 seconds<br>"
+            "• Swipe up → Volume +5%<br>"
+            "• Swipe down → Volume -5%<br><br>"
             "<b>Note:</b><br>"
-            "• Keep face within camera range<br>"
-            "• Ensure adequate lighting<br>"
-            "• After video starts playing, Gesture at screen to continue playback"
+            "• Keep your hand within the camera view<br>"
+            "• Perform gestures clearly and steadily<br>"
+            "• Ensure adequate lighting"
         )
+
         instructions.setStyleSheet("color: #cdd6f4; padding: 5px;")
         instructions.setWordWrap(True)
         
@@ -622,7 +602,7 @@ class MainWindow(QMainWindow):
         
         # Update labels
         self.file_name_label.setText(f"Filename: {filename}")
-        self.file_size_label.setText(f"Resolution: {width} × {height}")
+        self.file_size_label.setText(f"Size: {width} × {height}")
         self.file_duration_label.setText(f"Duration: {int(duration // 60):02d}:{int(duration % 60):02d}")
         self.file_fps_label.setText(f"Frame Rate: {fps:.1f} FPS")
         
@@ -721,22 +701,7 @@ class MainWindow(QMainWindow):
 
     def update_detection_status(self, detection_result):
         """Update detection status (hand & gesture)"""
-        if detection_result and detection_result.get('hand_present', False):
-            # Hand present
-            self.hand_status.setText("Hand Detected")
-            self.hand_status.setStyleSheet("background-color: #a6e3a1; color: #000000;")
-            gesture = detection_result.get('gesture', None)
-            if gesture:
-                self.gesture_status.setText(f"Gesture: {gesture}")
-                self.gesture_status.setStyleSheet("background-color: #89b4fa; color: #000000;")
-            else:
-                self.gesture_status.setText("Gesture: None")
-                self.gesture_status.setStyleSheet("background-color: #a6adc8; color: #000000;")
-        else:
-            self.hand_status.setText("Hand Not Detected")
-            self.hand_status.setStyleSheet("background-color: #a6adc8; color: #000000;")
-            self.gesture_status.setText("Gesture: N/A")
-            self.gesture_status.setStyleSheet("background-color: #a6adc8; color: #000000;")
+        pass
         
     def update_fps_display(self, fps):
         """Update FPS display"""
