@@ -13,6 +13,8 @@ class FullScreenPlayer(QWidget):
         self.parent_window = parent
         self.setup_ui()
         self.setup_style()
+        self.frame_remain = 0
+        self.last_command = ''
         
     def setup_ui(self):
         # Set window flags to make it a full screen window
@@ -278,39 +280,31 @@ class FullScreenPlayer(QWidget):
         
     def update_detection_status(self, detection_result):
         """Update detection status display"""
-        if detection_result and detection_result.get('face_detected', False):
-            eyes_closed = detection_result.get('eyes_closed', False)
-            is_gazing = detection_result.get('is_gazing', False)
-            
-            if eyes_closed:
-                self.show_status("Hand closed - Video paused", 1000)
-                self.show_overlays(
-                    detection_text="Hand closed", 
-                    playback_text="Paused",
-                    status_text="Hand closed"
-                )
-            elif not is_gazing:
-                self.show_status("Not gazing at screen - Video paused", 1000)
-                self.show_overlays(
-                    detection_text="Not gazing", 
-                    playback_text="Paused",
-                    status_text="Not gazing at screen"
-                )
+        gesture_cmd = None
+        if detection_result:
+            hand_present = detection_result.get('hand_present', False)
+            gesture_cmd = detection_result.get('cmd', None)
+            # is_hand = detection_result.get('is_hand', False)
+            if hand_present:
+                playback_text="Hand detected"
             else:
-                self.show_status("Gazing - Video playing", 1000)
-                self.show_overlays(
-                    detection_text="Gazing", 
-                    playback_text="Playing",
-                    status_text="Gazing at screen"
-                )
+                playback_text="No hand detected"
         else:
-            self.show_status("No face detected - Video paused", 1000)
-            self.show_overlays(
-                detection_text="No face detected", 
-                playback_text="Paused",
-                status_text="No face detected"
-            )
-        
+            playback_text="Detection disabled"
+
+        if gesture_cmd is None:
+            gesture_cmd = ' '
+            if self.frame_remain >= 0:
+                self.frame_remain -= 1
+                gesture_cmd = self.last_command
+        else:
+            self.frame_remain = 5
+            self.last_command = gesture_cmd
+        self.show_overlays(
+            detection_text=gesture_cmd,
+            playback_text=playback_text,
+        )
+
     def exit_fullscreen(self):
         """Exit full screen mode"""
         self.close()
