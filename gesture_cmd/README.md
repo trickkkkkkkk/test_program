@@ -1,4 +1,4 @@
-# 灯光音乐播放器
+# 手势遥控器
 
 [English](README_en.md) | 中文
 
@@ -67,7 +67,7 @@ python3 main.py
 ## 项目结构
 
 ```
-eye-remote-control/
+gesture-remote-control/
 ├──assets                      # 静态资源文件
 ├── src/                        # 源代码目录
 │   ├── gesture_recognizer.py   # 眼部检测核心逻辑
