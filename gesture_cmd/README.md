@@ -1,11 +1,11 @@
 # 灯光音乐播放器
 
-[中文](README.md) | English
+[English](README_en.md) | 中文
 
 本项目是一个基于 Quectel Pi H1 单板电脑实现的手势识别远程视频控制示例。
 系统通过摄像头采集手部图像，结合 AI 手势识别算法，实现隔空控制视频播放、进度与音量的自然交互体验。
 
-![](assets/main_recognize.png)
+![界面预览](assets/main_recognize.png)
 
 ## 功能特性
 
@@ -87,7 +87,7 @@ eye-remote-control/
 # 运行程序
 python3 main.py
 ```
-![](assets/main.png)
+![界面预览](assets/main.png)
 
 ## 报告问题
 欢迎提交Issue和Pull Request来改进此项目。
