@@ -3,6 +3,7 @@ import cv2
 import os
 import time
 from datetime import datetime
+import threading
 
 from PySide6.QtWidgets import (
     QApplication, QMainWindow, QWidget, QLabel, QPushButton, QVBoxLayout, 
@@ -202,7 +203,7 @@ class MainWindow(QMainWindow):
         
         title_layout = QHBoxLayout(title_frame)
         
-        title_label = QLabel("👁️ hand Remote Control")
+        title_label = QLabel("Gesture Remote Control")
         title_label.setStyleSheet("color: #89b4fa; font-size: 18px; font-weight: bold;")
         
         # Fullscreen button
@@ -636,10 +637,28 @@ class MainWindow(QMainWindow):
                 new_pos = max(0.0, min(self.video_duration, cur_pos + delta))
                 target_frame = int((new_pos / self.video_duration) * self.video_player_thread.total_frames) \
                                 if self.video_duration > 0 else self.video_player_thread.current_frame
-                self.video_player_thread.seek(target_frame)
-                self.statusBar().showMessage(f"Seek to {int(new_pos)}s")
+
+                # 使用后台线程异步执行 seek，避免阻塞主线程/UI，保护并发（简单锁）
+                def _do_seek(frame_idx, pos_sec):
+                    try:
+                        # optional: small sleep to batch rapid seeks (debounce)
+                        # time.sleep(0.05)
+                        self.video_player_thread.seek(frame_idx)
+                        # 可以在 seek 完成后通过信号或 invoke 来在主线程更新状态栏
+                        # 这里通过 QMetaObject 或直接在主线程设置消息也可（若线程安全）
+                        # 以简单做法：发回主线程去显示消息
+                        try:
+                            # Use QTimer.singleShot 0 to post message to main loop
+                            from PySide6.QtCore import QTimer
+                            QTimer.singleShot(0, lambda: self.statusBar().showMessage(f"Seek to {int(pos_sec)}s"))
+                        except Exception:
+                            pass
+                    except Exception as e:
+                        error(f"seek error (async): {e}")
+
+                threading.Thread(target=_do_seek, args=(target_frame, new_pos), daemon=True).start()
             except Exception as e:
-                error(f"seek error: {e}")
+                error(f"seek error (prep): {e}")
             return
         # 音量（系统 PulseAudio）
         if command in ("vol_up", "vol_down"):
