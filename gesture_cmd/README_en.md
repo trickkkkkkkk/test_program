@@ -2,10 +2,10 @@
 
 [中文](README.md) | English
 
-This project is a gesture-recognition–based remote video control demo implemented on the Quectel Pi H1 single-board computer.
+This project is a gesture-recognition–based remote video control demo implemented on the [Quectel Pi H1 single-board computer](https://developer.quectel.com/doc/sbc/en/index.html).
 The system captures hand images through a camera and applies AI-based hand gesture recognition algorithms to enable touchless control of video playback, progress, and volume, providing a natural and intuitive user interaction experience.
 
-![](assets/main_recognize.png)
+![](docs/assets/main_recognize.png)
 
 ## Features
 
@@ -68,7 +68,9 @@ python3 main.py
 
 ```
 gesture-remote-control/
-├── assets/                     # Static resource files
+├── docs                        # Project documentation
+│   ├── assets                  # Static asset files
+│   └── oceans.mp4              # Sample demo video
 ├── src/                        # Source code directory
 │   ├── gesture_recognizer.py   # Gesture recognition core logic
 │   ├── video_capture.py        # Video capture thread
@@ -77,7 +79,8 @@ gesture-remote-control/
 │   ├── log.py                  # Logging module
 ├── log_files/                  # Log files
 ├── main.py                     # Main program entry point
-├── README.md                   # Project documentation
+├── README.md                   # Project chinese documentation
+├── README_en.md                # Project english documentation
 └── requirements.txt            # Dependency list
 ```
 
@@ -87,7 +90,7 @@ gesture-remote-control/
 # run
 python3 main.py
 ```
-![](assets/main.png)
+![](docs/assets/main.png)
 
 ## Reporting Issues
 Issues and Pull Requests are welcome to help improve this project.

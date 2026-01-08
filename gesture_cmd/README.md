@@ -2,10 +2,10 @@
 
 [English](README_en.md) | 中文
 
-本项目是一个基于 Quectel Pi H1 单板电脑实现的手势识别远程视频控制示例。
+本项目是一个基于 [Quectel Pi H1 单板电脑](https://developer.quectel.com/doc/sbc/)实现的手势识别远程视频控制示例。
 系统通过摄像头采集手部图像，结合 AI 手势识别算法，实现隔空控制视频播放、进度与音量的自然交互体验。
 
-![界面预览](assets/main_recognize.png)
+![界面预览](docs/assets/main_recognize.png)
 
 ## 功能特性
 
@@ -68,7 +68,9 @@ python3 main.py
 
 ```
 gesture-remote-control/
-├──assets                      # 静态资源文件
+├── docs                        # 项目文档
+│   ├── assets                  # 静态资源文件
+│   └── oceans.mp4              # 示例播放视频
 ├── src/                        # 源代码目录
 │   ├── gesture_recognizer.py   # 眼部检测核心逻辑
 │   ├── video_capture.py        # 视频采集线程
@@ -76,8 +78,9 @@ gesture-remote-control/
 │   ├── fullscreen_player_mode.py  # 全屏播放模式界面
 │   ├── log.py                  # 日志记录模块
 ├── log_files/                        # 日志文件
-├── main.py                 # 主程序入口
-├── README.md                   # 项目说明文档
+├── main.py                     # 主程序入口
+├── README.md                   # 项目中文说明文档
+├── README_en.md                # 项目英文说明文档
 └── requirements.txt            # 依赖包列表
 ```
 
@@ -87,7 +90,7 @@ gesture-remote-control/
 # 运行程序
 python3 main.py
 ```
-![界面预览](assets/main.png)
+![界面预览](docs/assets/main.png)
 
 ## 报告问题
 欢迎提交Issue和Pull Request来改进此项目。
