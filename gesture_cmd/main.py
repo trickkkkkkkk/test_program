@@ -196,16 +196,6 @@ class MainWindow(QMainWindow):
         main_layout.setSpacing(10)
         main_layout.setContentsMargins(10, 10, 10, 10)
         
-        # Title bar
-        title_frame = QFrame()
-        title_frame.setFixedHeight(50)
-        title_frame.setStyleSheet("background-color: #313244; border-radius: 8px;")
-        
-        title_layout = QHBoxLayout(title_frame)
-        
-        title_label = QLabel("Gesture Remote Control")
-        title_label.setStyleSheet("color: #89b4fa; font-size: 18px; font-weight: bold;")
-        
         # Fullscreen button
         self.fullscreen_btn = QPushButton("Fullscreen")
         self.fullscreen_btn.setFixedSize(int(window_width * 0.12), 30)
@@ -234,11 +224,6 @@ class MainWindow(QMainWindow):
                 background-color: #74c7ec;
             }
         """)
-        title_layout.addWidget(title_label)
-        title_layout.addStretch()
-        title_layout.addWidget(self.fullscreen_play_btn)
-        title_layout.addWidget(self.fullscreen_btn)
-        main_layout.addWidget(title_frame)
         
         # Main content area - horizontal split
         content_splitter = QSplitter(Qt.Horizontal)
@@ -339,6 +324,14 @@ class MainWindow(QMainWindow):
         right_widget = QWidget()
         right_layout = QVBoxLayout(right_widget)
         right_layout.setSpacing(15)
+
+        screen_show_group = QGroupBox()
+        screen_show_layout = QGridLayout()
+        screen_show_layout.addWidget(self.fullscreen_play_btn, 0, 0)
+        screen_show_layout.addWidget(self.fullscreen_btn, 0, 1)
+        screen_show_group.setLayout(screen_show_layout)
+        right_layout.addWidget(screen_show_group)
+        # file_info_layout = QVBoxLayout()
         
         # Real-time status display
         status_group = QGroupBox("📊 System Status")
@@ -380,28 +373,6 @@ class MainWindow(QMainWindow):
         self.video_status.setStyleSheet("background-color: #f38ba8; color: #000000;")
         self.video_status.setFixedSize(120, 25)  # Fixed size to prevent layout changes
         
-        # Video file info
-        file_info_group = QGroupBox("📁 Video Info")
-        file_info_layout = QVBoxLayout()
-        
-        self.file_name_label = QLabel("Filename: Not Selected")
-        self.file_name_label.setStyleSheet("color: #cdd6f4; font-size: 15px;")
-        
-        self.file_size_label = QLabel("Size: Not Loaded")
-        self.file_size_label.setStyleSheet("color: #cdd6f4; font-size: 15px;")
-        
-        self.file_duration_label = QLabel("Duration: Not Loaded")
-        self.file_duration_label.setStyleSheet("color: #cdd6f4; font-size: 15px;")
-        
-        self.file_fps_label = QLabel("Frame Rate: Not Loaded")
-        self.file_fps_label.setStyleSheet("color: #cdd6f4; font-size: 15px;")
-        
-        file_info_layout.addWidget(self.file_name_label)
-        file_info_layout.addWidget(self.file_size_label)
-        file_info_layout.addWidget(self.file_duration_label)
-        file_info_layout.addWidget(self.file_fps_label)
-        file_info_group.setLayout(file_info_layout)
-        
         # Add to grid layout
         status_layout.addWidget(cam_status_label, 0, 0)
         status_layout.addWidget(self.cam_status, 0, 1)
@@ -415,7 +386,7 @@ class MainWindow(QMainWindow):
         
         status_group.setLayout(status_layout)
         right_layout.addWidget(status_group)
-        right_layout.addWidget(file_info_group)
+        # right_layout.addWidget(file_info_group)
         
         # Control instructions
         instruction_group = QGroupBox("📋 Control Instructions")
@@ -601,12 +572,6 @@ class MainWindow(QMainWindow):
         fps = video_info['fps']
         duration = video_info['duration']
         
-        # Update labels
-        self.file_name_label.setText(f"Filename: {filename}")
-        self.file_size_label.setText(f"Size: {width} × {height}")
-        self.file_duration_label.setText(f"Duration: {int(duration // 60):02d}:{int(duration % 60):02d}")
-        self.file_fps_label.setText(f"Frame Rate: {fps:.1f} FPS")
-        
         # Update time display
         self.video_duration = duration
         self.update_time_label(0, duration)
@@ -638,17 +603,12 @@ class MainWindow(QMainWindow):
                 target_frame = int((new_pos / self.video_duration) * self.video_player_thread.total_frames) \
                                 if self.video_duration > 0 else self.video_player_thread.current_frame
 
-                # 使用后台线程异步执行 seek，避免阻塞主线程/UI，保护并发（简单锁）
                 def _do_seek(frame_idx, pos_sec):
                     try:
                         # optional: small sleep to batch rapid seeks (debounce)
                         # time.sleep(0.05)
                         self.video_player_thread.seek(frame_idx)
-                        # 可以在 seek 完成后通过信号或 invoke 来在主线程更新状态栏
-                        # 这里通过 QMetaObject 或直接在主线程设置消息也可（若线程安全）
-                        # 以简单做法：发回主线程去显示消息
                         try:
-                            # Use QTimer.singleShot 0 to post message to main loop
                             from PySide6.QtCore import QTimer
                             QTimer.singleShot(0, lambda: self.statusBar().showMessage(f"Seek to {int(pos_sec)}s"))
                         except Exception:
