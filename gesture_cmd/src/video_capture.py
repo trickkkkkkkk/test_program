@@ -41,7 +41,7 @@ class VideoCaptureThread(QThread):
         self._last_detect_time = 0.0  # time.time() 单位秒
 
         self.frame_remain = 0
-        self.last_command = ''
+        self.command_remain = ''
 
     def find_available_camera(self):
         """自动检测可用摄像头设备，返回设备 id 或 None。"""
@@ -185,12 +185,12 @@ class VideoCaptureThread(QThread):
         if cmd is None:
             if self.frame_remain >= 0:
                 self.frame_remain -= 1
-                gesture_cmd = self.last_command
+                gesture_cmd = self.command_remain
             else:
                 return None
         else:
             self.frame_remain = 5
-            self.last_command = cmd
+            self.command_remain = cmd
         return gesture_cmd
 
     def run(self):
